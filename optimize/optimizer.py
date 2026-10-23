@@ -1,217 +1,210 @@
 """
-AFTERSHOCK AI - Budget-Aware Intervention Optimizer
-Owner: Rachitha
+AFTERSHOCK AI — Budget-Aware Intervention Optimizer
+Module: optimize/optimizer.py
 
-Purpose:
-Choose the best combination of protective interventions that stays
-within a limited budget and minimizes simulated disruption.
-
-This is a standalone first version. Later, Rachana can connect it
-to Flask and Maithri can connect it to the real simulation output.
+Formulates and solves the budget-constrained critical infrastructure protection
+problem using exact combinatorial multi-objective optimization over the cascading
+failure simulation of the 10 civic infrastructure facilities.
 """
 
-from itertools import combinations
+import sys
+import os
+import math
+
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
+
+from backend.simulation import (
+    simulate_disaster,
+    INTERVENTIONS,
+    ASSETS,
+    SCENARIOS,
+    resolve_scenario,
+)
 
 
-# Demo interventions.
-# Costs are SIMULATED values for the hackathon prototype.
-INTERVENTIONS = [
-    {
-        "id": "protect_substation_A",
-        "name": "Protect Substation A",
-        "cost": 500000,
-    },
-    {
-        "id": "backup_hospital_B",
-        "name": "Backup Power for Hospital B",
-        "cost": 400000,
-    },
-    {
-        "id": "protect_water_pump_C",
-        "name": "Protect Water Pump C",
-        "cost": 300000,
-    },
-    {
-        "id": "backup_communication_D",
-        "name": "Backup Communication Tower D",
-        "cost": 200000,
-    },
-]
+def get_baseline_disruption(scenario="flood"):
+    """Calculate the baseline disruption score without any protective interventions."""
+    sim = simulate_disaster(scenario, [])
+    return sim["weighted_disruption"]
 
 
-# These are demo weights for the first prototype.
-# Later, the optimizer should use Maithri's simulation to calculate
-# the actual disruption after each intervention combination.
-ASSET_WEIGHTS = {
-    "HOSPITAL": 10,
-    "WATER": 8,
-    "SUBSTATION": 7,
-    "COMMUNICATION": 5,
-    "EMERGENCY": 9,
-}
-
-
-def calculate_disruption(failed_assets, selected_interventions):
+def optimize_interventions(scenario="flood", budget=50000, **kwargs):
     """
-    Calculate a simple weighted disruption score.
+    Finds the optimal set of infrastructure protection interventions that
+    minimizes simulated cascading disruption within a given budget.
 
-    Lower score = better outcome.
-    """
+    Decision Model:
+    ---------------
+    Objective:
+        Lexicographic minimization:
+        1. Minimize post-disaster weighted disruption score: D(S, P)
+        2. Minimize intervention cost: Cost(P)
+        3. Minimize intervention count: |P|
 
-    disruption = 0
-
-    for asset in failed_assets:
-        asset_upper = asset.upper()
-
-        matched = False
-
-        for asset_type, weight in ASSET_WEIGHTS.items():
-            if asset_type in asset_upper:
-                disruption += weight
-                matched = True
-                break
-
-        if not matched:
-            disruption += 2
-
-    # Demo reduction values.
-    # These will eventually be replaced by actual simulation results.
-    reductions = {
-        "protect_substation_A": 7,
-        "backup_hospital_B": 10,
-        "protect_water_pump_C": 8,
-        "backup_communication_D": 5,
-    }
-
-    for intervention in selected_interventions:
-        disruption -= reductions.get(intervention["id"], 0)
-
-    return max(disruption, 0)
-
-
-def optimize_interventions(failed_assets, budget):
-    """
-    Test every affordable combination of interventions and return
-    the combination with the lowest disruption score.
+    Subject to:
+        Cost(P) <= Budget
 
     Parameters
     ----------
-    failed_assets : list[str]
-        Assets reported as failed by the disaster simulation.
-
-    budget : int
-        Maximum simulated budget in rupees.
+    scenario : str or list
+        Scenario ID ("flood", "power", "communication").
+        If a list is provided (legacy test input), defaults to "flood".
+    budget : int or float
+        Maximum allowable intervention budget in INR. Default is 50,000.
 
     Returns
     -------
     dict
-        Recommended intervention combination and comparison data.
+        Optimal intervention plan and comparative resilience metrics.
     """
+    if "scenario_or_failed" in kwargs:
+        scenario = kwargs["scenario_or_failed"]
+
+    # Backward compatibility with legacy test harness passing failed asset lists
+    if isinstance(scenario, (list, set)):
+        scenario_id = "flood"
+    else:
+        scenario_id = resolve_scenario(scenario)
+
+    if (
+        isinstance(budget, bool)
+        or not isinstance(budget, (int, float))
+        or not math.isfinite(budget)
+        or budget < 0
+    ):
+        raise ValueError("Budget must be a finite, non-negative number.")
+
+    # 1. Baseline simulation without interventions
+    baseline_sim = simulate_disaster(scenario_id, [])
+    baseline_disruption = baseline_sim["weighted_disruption"]
+
+    # Candidate intervention pool: 6 original interventions
+    candidate_interventions = INTERVENTIONS
+    n_interventions = len(candidate_interventions)
 
     best_solution = None
-    best_disruption = float("inf")
+    best_score = (float("inf"), float("inf"), float("inf"))
+    combinations_evaluated = 0
 
-    # Test every possible combination.
-    for number_selected in range(len(INTERVENTIONS) + 1):
-        for combination in combinations(INTERVENTIONS, number_selected):
+    # Exhaustive search over all 2^6 = 64 combinations
+    for mask in range(1 << n_interventions):
+        selected = [
+            candidate_interventions[i]
+            for i in range(n_interventions)
+            if mask & (1 << i)
+        ]
 
-            total_cost = sum(item["cost"] for item in combination)
+        total_cost = sum(item["cost"] for item in selected)
 
-            # Never exceed the available budget.
-            if total_cost > budget:
-                continue
+        # Budget constraint
+        if total_cost > budget:
+            continue
 
-            disruption = calculate_disruption(
-                failed_assets,
-                combination
-            )
+        combinations_evaluated += 1
 
-            if disruption < best_disruption:
-                best_disruption = disruption
+        selected_ids = [item["id"] for item in selected]
+        sim_result = simulate_disaster(scenario_id, selected_ids)
+        disruption = sim_result["weighted_disruption"]
 
-                best_solution = {
-                    "selected_interventions": [
-                        item["name"] for item in combination
-                    ],
-                    "intervention_ids": [
-                        item["id"] for item in combination
-                    ],
-                    "total_cost": total_cost,
-                    "remaining_budget": budget - total_cost,
-                    "disruption_score": disruption,
-                }
+        # Lexicographic criteria: (disruption, cost, count)
+        candidate_score = (disruption, total_cost, len(selected))
 
-    return best_solution
+        if candidate_score < best_score:
+            best_score = candidate_score
+            best_solution = {
+                "selected": selected,
+                "total_cost": total_cost,
+                "sim": sim_result,
+            }
 
+    if best_solution is None:
+        best_solution = {
+            "selected": [],
+            "total_cost": 0,
+            "sim": baseline_sim,
+        }
 
-def get_baseline_disruption(failed_assets):
-    """Calculate disruption with no intervention."""
-    return calculate_disruption(failed_assets, [])
+    selected_list = best_solution["selected"]
+    selected_ids = [item["id"] for item in selected_list]
+    selected_names = [item["name"] for item in selected_list]
+    total_cost = best_solution["total_cost"]
+    remaining_budget = budget - total_cost
 
+    optimized_sim = best_solution["sim"]
+    optimized_disruption = optimized_sim["weighted_disruption"]
+    disruption_reduction = max(baseline_disruption - optimized_disruption, 0)
 
-def get_optimizer_result(failed_assets, budget):
-    """
-    Convenient function for the Flask backend.
+    reduction_percent = (
+        (100.0 * disruption_reduction / baseline_disruption)
+        if baseline_disruption > 0
+        else 0.0
+    )
 
-    Returns both baseline and optimized results.
-    """
+    min_cost = min((item["cost"] for item in candidate_interventions), default=0)
 
-    baseline = get_baseline_disruption(failed_assets)
-    optimized = optimize_interventions(failed_assets, budget)
+    if disruption_reduction > 0:
+        message = (
+            f"Optimal plan identified. Evaluated {combinations_evaluated} affordable combination(s). "
+            f"Reduces cascading disruption by {disruption_reduction} points ({round(reduction_percent, 1)}%) "
+            f"using Rs. {total_cost:,} of the Rs. {budget:,} budget."
+        )
+    elif budget < min_cost:
+        message = (
+            f"Budget of Rs. {budget:,} is insufficient for any available intervention "
+            f"(minimum required: Rs. {min_cost:,}). Baseline disruption remains at {baseline_disruption}."
+        )
+    elif baseline_disruption == 0:
+        message = (
+            f"Scenario '{scenario_id}' results in zero baseline disruption. "
+            f"No intervention needed."
+        )
+    else:
+        message = (
+            f"No available intervention within Rs. {budget:,} reduces disruption for scenario '{scenario_id}'. "
+            f"Disruption remains at baseline ({baseline_disruption}); unneeded spending was avoided."
+        )
 
     return {
+        "scenario": scenario_id,
+        "scenario_name": SCENARIOS[scenario_id]["name"],
         "budget": budget,
-        "baseline_disruption": baseline,
-        "optimized_disruption": optimized["disruption_score"],
-        "improvement": max(
-            baseline - optimized["disruption_score"], 0
-        ),
-        "selected_interventions": optimized["selected_interventions"],
-        "intervention_ids": optimized["intervention_ids"],
-        "total_cost": optimized["total_cost"],
-        "remaining_budget": optimized["remaining_budget"],
+        "selected_interventions": selected_list,
+        "selected_intervention_ids": selected_ids,
+        "selected_intervention_names": selected_names,
+        "intervention_ids": selected_ids,
+        "total_cost": total_cost,
+        "remaining_budget": remaining_budget,
+        "baseline_disruption": baseline_disruption,
+        "optimized_disruption": optimized_disruption,
+        "disruption_reduction": disruption_reduction,
+        "improvement": disruption_reduction,
+        "disruption_reduction_percent": round(reduction_percent, 2),
+        "combinations_evaluated": combinations_evaluated,
+        "message": message,
+        "baseline": baseline_sim,
+        "optimized": optimized_sim,
+        "note": "Combinatorial multi-objective knapsack search with fixed-point cascade simulation.",
     }
 
 
+def get_optimizer_result(scenario_or_failed="flood", budget=50000):
+    """Convenience alias for API and test harness."""
+    return optimize_interventions(scenario_or_failed, budget)
+
+
 if __name__ == "__main__":
-    # ------------------------------------------
-    # DEMO TEST
-    # ------------------------------------------
-
-    failed_assets = [
-        "SUBSTATION_A",
-        "WATER_PUMP_C",
-        "HOSPITAL_B",
-    ]
-
-    budget = 1_000_000  # ₹10 lakh simulated budget
-
-    result = get_optimizer_result(
-        failed_assets,
-        budget
-    )
-
-    print("\n====================================")
-    print("       AFTERSHOCK AI OPTIMIZER")
-    print("====================================")
-
-    print(f"\nBudget: ₹{result['budget']:,}")
-
-    print(f"\nBaseline disruption: "
-          f"{result['baseline_disruption']}")
-
-    print(f"Optimized disruption: "
-          f"{result['optimized_disruption']}")
-
-    print(f"Improvement: "
-          f"{result['improvement']}")
-
-    print("\nRecommended interventions:")
-
-    for intervention in result["selected_interventions"]:
-        print(f"  ✓ {intervention}")
-
-    print(f"\nTotal cost: ₹{result['total_cost']:,}")
-    print(f"Remaining budget: ₹{result['remaining_budget']:,}")
-
-    print("\nOptimizer test completed.")
+    test_budget = 50000  # Rs. 50,000 default budget
+    for s in ["flood", "power", "communication"]:
+        res = get_optimizer_result(s, test_budget)
+        print(f"\n====================================")
+        print(f"Scenario:             {res['scenario_name']}")
+        print(f"Budget:               Rs. {res['budget']:,}")
+        print(f"Baseline disruption:  {res['baseline_disruption']}")
+        print(f"Optimized disruption: {res['optimized_disruption']}")
+        print(f"Disruption reduction: {res['disruption_reduction']} ({res['disruption_reduction_percent']}%)")
+        print(f"Total cost:           Rs. {res['total_cost']:,}")
+        print(f"Remaining budget:     Rs. {res['remaining_budget']:,}")
+        print(f"Combinations tested:  {res['combinations_evaluated']}")
+        print(f"Selected:             {res['selected_intervention_names']}")
