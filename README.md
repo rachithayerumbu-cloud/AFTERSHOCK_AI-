@@ -135,7 +135,7 @@ AFTERSHOCK_AI/
 
 ```mermaid
 flowchart TD
-    User["User (Browser)"] <--> Frontend["Vanilla HTML5 / CSS3 / JS (Offline)"]
+    User["User (Browser)"] <--> Frontend["HTML5 / CSS3 / JS (Offline)"]
     Frontend <-->|"REST API (JSON via fetch)"| Flask["Flask Server (app.py)"]
     
     subgraph Core Engine
