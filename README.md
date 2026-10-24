@@ -34,11 +34,11 @@
 ## 1. Problem Statement
 
 Modern cities depend on tightly interconnected systems of lifelines:
-- **Electricity Substations** supply power to water pumps, hospitals, and cellular antennas.
-- **Water Pump Stations** pressurize drinking water and deliver essential supplies for hospital sterilization and relief shelters.
-- **Hospitals** require continuous electricity, potable water, medical telemetry, and physical road access to treat patients.
-- **Communication Towers** relay 911 dispatch calls and telemetry between first responders and command centers.
-- **Main Access Roads** allow ambulances, fire engines, evacuees, and emergency supplies to navigate the city.
+Electricity, water supply, hospitals, and communication systems depend on one another. When one service fails due to a disaster, other connected services may also be affected.
+
+It is difficult to understand how these failures spread and which protective measures should be given priority when the available budget is limited.
+
+Therefore, AFTERSHOCK AI is developed to simulate cascading infrastructure failures and help identify suitable protection measures within a limited budget.
 
 When one asset fails during a disaster (e.g., a transformer explodes or a river breaches its embankment), conventional single-sector models fail to capture the domino effect:
 1. An initial shock disables the electricity substation.
