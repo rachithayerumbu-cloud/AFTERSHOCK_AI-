@@ -27,7 +27,6 @@
 19. [Troubleshooting Guide](#19-troubleshooting-guide)
 20. [Academic Assumptions & Limitations](#20-academic-assumptions--limitations)
 21. [Security & Reliability Considerations](#21-security--reliability-considerations)
-22. [Future Improvements](#22-future-improvements)
 
 ---
 
@@ -538,14 +537,4 @@ Invoke-RestMethod -Uri "$baseUrl/api/optimize" -Method POST -Body $optBody -Cont
 
 ---
 
-## 22. Future Improvements
-
-1. **Multi-State Degraded Operations:** Extend asset states beyond binary (Operational/Failed) to include partial capacity (e.g., 50% brownout).
-2. **Time-Dependent Dynamic Restoration:** Model repair crews, restoration time curves, and priority dispatching over a multi-day timeline.
-3. **Integer Linear Programming (ILP):** Integrate `scipy.optimize.milp` to scale budget optimization to networks with hundreds of assets.
-4. **Geographic GIS Mapping:** Bundle offline GeoJSON layers with Leaflet for spatial layout visualization.
-
----
-
-**Developed for the Academic Hackathon by the AFTERSHOCK AI Engineering Team.**
 
