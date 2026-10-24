@@ -71,8 +71,7 @@ City planners and emergency agencies operate under **strict fiscal constraints**
 
 ## 3. Intended Users
 
-- **Third-Year Computer Science and Engineering Students:** Learning graph algorithms (BFS/queues), combinatorial optimization, REST API design, and scikit-learn ML workflows.
-- **Hackathon Judges & Academic Evaluators:** Inspecting clean, modular code, documented mathematical formulations, and interactive visualizations.
+
 - **Civil & Municipal Resilience Researchers:** Exploring conceptual proof-of-concept cascade models before investing in heavy industrial simulation tools.
 
 ---
@@ -82,7 +81,7 @@ City planners and emergency agencies operate under **strict fiscal constraints**
 ### Frontend
 - **HTML5:** Semantic, accessible layout.
 - **CSS3:** Dark-mode municipal command center theme, responsive CSS Grid and Flexbox, custom status badges.
-- **Vanilla JavaScript (ES6+):** Pure JavaScript using the native `fetch()` API for client-server communication.
+- **JavaScript:** Pure JavaScript using the native `fetch()` API for client-server communication.
 - **Native HTML/CSS/SVG Visualizations:** Custom directed SVG dependency graph and pure CSS bar chart. **Zero external chart CDNs (e.g. Chart.js) or font CDNs.**
 
 ### Backend
