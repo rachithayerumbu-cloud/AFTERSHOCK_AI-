@@ -5,12 +5,6 @@
 
 ---
 
-> **ACADEMIC & EDUCATIONAL DISCLAIMER**  
-> **AFTERSHOCK AI is strictly an educational simulation and research demonstration prototype.**  
-> It uses programmatic synthetic data, illustrative economic costs, and simplified dependency assumptions. It is **NOT** a certified disaster prediction tool, hydraulic/electrical grid engineering model, or emergency decision-support system. It must **NEVER** be used to make real-world evacuation, healthcare triage, or municipal civil defense decisions.
-
----
-
 ## Table of Contents
 1. [Problem Statement](#1-problem-statement)
 2. [Project Objectives](#2-project-objectives)
