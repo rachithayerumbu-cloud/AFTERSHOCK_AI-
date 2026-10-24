@@ -80,12 +80,12 @@ City planners and emergency agencies operate under **strict fiscal constraints**
 
 ### Backend
 - **Python 3.10+ / 3.11+**
-- **Flask (>= 3.0.0):** Lightweight WSGI web framework serving static single-page assets and JSON REST APIs.
+- **Flask :** Lightweight WSGI web framework serving static single-page assets and JSON REST APIs.
 - **Built-in Python Modules:** `json`, `math`, `os`, `sys`, `copy`, `unittest`.
 
 ### AI/ML
-- **Scikit-learn (>= 1.3.0):** `RandomForestClassifier` with a fixed random seed (`random_state=42`).
-- **NumPy (>= 1.24.0):** Vectorized synthetic feature generation.
+- **Scikit-learn :** `RandomForestClassifier` with a fixed random seed (`random_state=42`).
+- **NumPy :** Vectorized synthetic feature generation.
 
 ### Data Storage
 - **Local JSON:** `data/infrastructure.json` for assets, directed dependencies, disaster scenarios, and intervention catalogs.
