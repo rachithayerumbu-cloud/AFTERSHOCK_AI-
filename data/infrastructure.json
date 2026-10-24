@@ -1,0 +1,292 @@
+{
+  "metadata": {
+    "project": "AFTERSHOCK AI",
+    "version": "2.1.0",
+    "city": "Mangaluru (Mangalore)",
+    "state": "Karnataka",
+    "country": "India",
+    "region": "Coastal Karnataka / Dakshina Kannada",
+    "currency": "INR",
+    "currency_symbol": "₹",
+    "data_type": "Illustrative Academic Model (Public Reference Infrastructure)",
+    "disclaimer": "This application uses simulated infrastructure data based on public Mangaluru facility names. It is an educational prototype and not a validated disaster prediction or emergency decision-support system.",
+    "extensibility": "Additional cities can be modeled by supplying structured JSON configuration files under data/."
+  },
+  "assets": [
+    {
+      "id": "substation",
+      "name": "Kavoor 220/110 kV Substation (KPTCL)",
+      "category": "Energy",
+      "service": "High-Voltage Grid Distribution (Mescom / KPTCL)",
+      "icon": "⚡",
+      "criticality": 10,
+      "exposure_score": 9.0,
+      "redundancy_level": 0,
+      "location": "Kavoor, Mangaluru",
+      "backup_protection": "Standard grid circuit breakers; lacks perimeter flood berm and redundant dual river feeder.",
+      "description": "Primary transmission substation operated by KPTCL, supplying high-voltage electricity across northern and central Mangaluru, including the Netravati pumping stations, Wenlock Hospital, and Kadri telecom corridors.",
+      "data_origin": "Verified Public Facility Name (Model Dependencies Illustrative)",
+      "depends_on": []
+    },
+    {
+      "id": "water",
+      "name": "Thumbay Vented Dam & Pumping Station",
+      "category": "Water Supply",
+      "service": "Netravati River Potable Water Intake & Pressurization",
+      "icon": "💧",
+      "criticality": 8,
+      "exposure_score": 7.5,
+      "redundancy_level": 0,
+      "location": "Thumbay / Bantwal Corridor, Netravati Basin",
+      "backup_protection": "Automated hydraulic check valves; lacks on-site emergency diesel power generation.",
+      "description": "Primary municipal water intake on the Netravati River, pressurizing raw and treated water supply mains across Mangaluru City Corporation (MCC) limits.",
+      "data_origin": "Verified Public Facility Name (Model Dependencies Illustrative)",
+      "depends_on": ["substation"]
+    },
+    {
+      "id": "hospital",
+      "name": "Government Wenlock District Hospital",
+      "category": "Healthcare",
+      "service": "Tertiary Trauma Care & Regional Emergency Healthcare",
+      "icon": "🏥",
+      "criticality": 10,
+      "exposure_score": 6.0,
+      "redundancy_level": 1,
+      "location": "Hampankatta, Central Mangaluru",
+      "backup_protection": "Short-term uninterruptible power supply (UPS) batteries; lacks long-term microgrid and water storage reservoirs.",
+      "description": "Regional tertiary trauma care and multi-speciality government referral hospital in Hampankatta requiring continuous electrical power, pressurized water, telemetry communications, and road ambulance transit.",
+      "data_origin": "Verified Public Facility Name (Model Dependencies Illustrative)",
+      "depends_on": ["substation", "water", "tower", "road"]
+    },
+    {
+      "id": "tower",
+      "name": "Kadri Hills Cellular & Microwave Relay Mast",
+      "category": "Telecommunications",
+      "service": "Cellular & First-Responder Emergency Radio Relay",
+      "icon": "📡",
+      "criticality": 7,
+      "exposure_score": 8.0,
+      "redundancy_level": 0,
+      "location": "Kadri Hills, Mangaluru",
+      "backup_protection": "Standard cellular transceiver relay; vulnerable to power blackout and antenna shear from extreme coastal winds.",
+      "description": "High-elevation telecommunications antenna mast transmitting wireless voice, telemetry, and emergency dispatch radio for first responders across Mangaluru.",
+      "data_origin": "Verified Public Facility Name (Model Dependencies Illustrative)",
+      "depends_on": ["substation"]
+    },
+    {
+      "id": "road",
+      "name": "NH-66 Kulur Bridge Arterial Corridor",
+      "category": "Transportation",
+      "service": "National Highway Transit & Gurupura River Crossing",
+      "icon": "🛣️",
+      "criticality": 8,
+      "exposure_score": 8.5,
+      "redundancy_level": 0,
+      "location": "Kulur / Panambur Corridor, Mangaluru",
+      "backup_protection": "Dual-lane arterial highway bridge corridor across river flood basin; lacks elevated flood bypass.",
+      "description": "Vital coastal highway bridge corridor carrying NH-66 traffic over the Gurupura River, connecting central Mangaluru to New Mangalore Port, industrial belts, and northern relief routes.",
+      "data_origin": "Verified Public Facility Name (Model Dependencies Illustrative)",
+      "depends_on": []
+    },
+    {
+      "id": "emergency",
+      "name": "MCC Disaster Incident Command Centre",
+      "category": "Emergency Services",
+      "service": "112 / 108 Dispatch & Disaster Incident Command",
+      "icon": "🚑",
+      "criticality": 9,
+      "exposure_score": 5.5,
+      "redundancy_level": 1,
+      "location": "MCC Headquarters, Lalbagh, Mangaluru",
+      "backup_protection": "Municipal dispatch facility; lacks auxiliary standby generator and redundant satellite dish link.",
+      "description": "Mangaluru City Corporation (MCC) emergency operations centre at Lalbagh coordinating ambulance, police, fire, and NDRF/SDRF coastal disaster response.",
+      "data_origin": "Verified Public Facility Name (Model Dependencies Illustrative)",
+      "depends_on": ["substation", "tower", "road"]
+    },
+    {
+      "id": "shelter",
+      "name": "Baikampady Flood & Cyclone Evacuation Shelter",
+      "category": "Public Safety",
+      "service": "Displaced Coastal Citizen Evacuation Housing",
+      "icon": "🏠",
+      "criticality": 7,
+      "exposure_score": 7.0,
+      "redundancy_level": 0,
+      "location": "Baikampady Coastal Belt, Mangaluru",
+      "backup_protection": "Reinforced community evacuation hall; lacks dedicated potable water storage cistern.",
+      "description": "Designated public evacuation shelter in Baikampady accommodating coastal citizens and port-area workers displaced by Arabian Sea storm surges and river flooding.",
+      "data_origin": "Verified Public Facility Name (Model Dependencies Illustrative)",
+      "depends_on": ["water", "road"]
+    },
+    {
+      "id": "treatment",
+      "name": "Thumbay / Ramakrishna Mission Water Treatment Plant",
+      "category": "Water Supply",
+      "service": "Netravati River Raw Water Purification & Disinfection",
+      "icon": "🚰",
+      "criticality": 6,
+      "exposure_score": 6.5,
+      "redundancy_level": 0,
+      "location": "Thumbay Water Complex, Mangaluru",
+      "backup_protection": "Chlorination and rapid-sand filtration facility; trips offline immediately during electrical brownouts.",
+      "description": "Municipal purification station delivering potable treated water into Mangaluru City Corporation storage reservoirs.",
+      "data_origin": "Verified Public Facility Name (Model Dependencies Illustrative)",
+      "depends_on": ["substation", "water"]
+    }
+  ],
+  "dependencies": [
+    {
+      "source": "substation",
+      "target": "water",
+      "description": "Thumbay Water Pumping Station requires electrical power from Kavoor Substation to drive intake turbines."
+    },
+    {
+      "source": "substation",
+      "target": "tower",
+      "description": "Kadri Hills Communication Mast requires grid power from Kavoor Substation for cellular transmitters."
+    },
+    {
+      "source": "substation",
+      "target": "hospital",
+      "description": "Government Wenlock Hospital requires electricity from Kavoor Substation for ICU, ventilators, and surgical suites."
+    },
+    {
+      "source": "water",
+      "target": "hospital",
+      "description": "Wenlock Hospital requires pressurized potable water from Thumbay Pumping Station for sterilization, dialysis, and hygiene."
+    },
+    {
+      "source": "tower",
+      "target": "hospital",
+      "description": "Wenlock Hospital depends on Kadri Hills Communication Mast for ambulance telemetry, emergency dispatch, and telemedicine."
+    },
+    {
+      "source": "road",
+      "target": "hospital",
+      "description": "Wenlock Hospital requires NH-66 Kulur Corridor for patient ambulance arrivals, medical oxygen tankers, and trauma surgeons."
+    },
+    {
+      "source": "substation",
+      "target": "emergency",
+      "description": "MCC Incident Command Centre requires electricity from Kavoor Substation to operate computer dispatch consoles and GIS servers."
+    },
+    {
+      "source": "tower",
+      "target": "emergency",
+      "description": "MCC Incident Command Centre requires Kadri Hills Tower for 112 emergency calls and emergency responder radio channels."
+    },
+    {
+      "source": "road",
+      "target": "emergency",
+      "description": "MCC Incident Command Centre requires NH-66 Kulur Corridor for physical deployment of emergency rescue vehicles and fire tenders."
+    },
+    {
+      "source": "water",
+      "target": "shelter",
+      "description": "Baikampady Relief Shelter requires pressurized potable water from Thumbay Pumping Station to support evacuees."
+    },
+    {
+      "source": "road",
+      "target": "shelter",
+      "description": "Baikampady Relief Shelter requires NH-66 Kulur Corridor for evacuee transport and emergency food ration deliveries."
+    },
+    {
+      "source": "substation",
+      "target": "treatment",
+      "description": "Thumbay Water Treatment Plant requires electricity from Kavoor Substation to run chemical pumps and filtration mixers."
+    },
+    {
+      "source": "water",
+      "target": "treatment",
+      "description": "Thumbay Water Treatment Plant requires raw water intake influx from Thumbay Pumping Station."
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "flood",
+      "name": "Monsoon Cloudburst & Netravati / Gurupura River Flood",
+      "hazard_type": "flood",
+      "description": "Southwest monsoon cloudburst and Arabian Sea high-tide submerge low-lying switchgear at Kavoor Substation and wash out approaches to NH-66 Kulur Bridge.",
+      "initial_failures": ["substation", "road"],
+      "explanation": "High water levels flood electrical switches at Kavoor Substation and breach the NH-66 Kulur Bridge corridor, simultaneously cutting power and physical transit across northern Mangaluru."
+    },
+    {
+      "id": "power_outage",
+      "name": "Kavoor Substation Grid Transformer Failure",
+      "hazard_type": "power_outage",
+      "description": "Coastal salt-fog corrosion and intense lightning surge cause explosive transformer failure at Kavoor 220/110kV Substation, cutting off citywide grid power.",
+      "initial_failures": ["substation"],
+      "explanation": "Total blackout at Kavoor Substation severs electrical supply to water pumping, telecommunication towers, and healthcare lifelines."
+    },
+    {
+      "id": "communication_failure",
+      "name": "Severe Coastal Cyclone Telecommunications Collapse",
+      "hazard_type": "communication_failure",
+      "description": "Severe Arabian Sea cyclone with 130 km/h wind gusts shears microwave dish arrays at Kadri Hills Tower and snaps aerial fiber-optic connections.",
+      "initial_failures": ["tower"],
+      "explanation": "Complete loss of wireless communications and telemetry across Mangaluru City Corporation emergency dispatch and hospital networks."
+    }
+  ],
+  "interventions": [
+    {
+      "id": "INT-SUB",
+      "name": "Kavoor Substation Flood Berms & Sump Pumps",
+      "description": "Constructs reinforced concrete perimeter flood berms and automated submersible dewatering pumps around Kavoor Substation switchgear.",
+      "asset_id": "substation",
+      "cost": 35000,
+      "estimated_benefit": "Prevents floodwaters from inundating Kavoor Substation during extreme Netravati and Gurupura river overflows.",
+      "applicable_hazard": "flood",
+      "protection_type": "hazard_defense"
+    },
+    {
+      "id": "INT-ROD",
+      "name": "NH-66 Kulur Corridor Elevated Bypass",
+      "description": "Builds an all-weather elevated bypass causeway and reinforced riprap embankments along the Gurupura river crossing.",
+      "asset_id": "road",
+      "cost": 25000,
+      "estimated_benefit": "Ensures uninterrupted ambulance transit to Wenlock Hospital and Baikampady relief shelters during river flooding.",
+      "applicable_hazard": "flood",
+      "protection_type": "hazard_defense"
+    },
+    {
+      "id": "INT-WTR",
+      "name": "Thumbay Pumping Station Diesel Backup Microgrid",
+      "description": "Installs an on-site diesel backup generator and automatic transfer switch (ATS) at the Thumbay Water Pumping Station.",
+      "asset_id": "water",
+      "cost": 15000,
+      "estimated_benefit": "Maintains municipal water pumping operations during power outages, preserving potable supplies to Wenlock Hospital and shelters.",
+      "applicable_hazard": "power_loss",
+      "protection_type": "dependency_backup"
+    },
+    {
+      "id": "INT-COM",
+      "name": "Kadri Tower Wind Hardening & Battery Array",
+      "description": "Equips Kadri Hills Mast with high-tensile guy-wire storm rigging and long-duration lithium battery backup banks.",
+      "asset_id": "tower",
+      "cost": 20000,
+      "estimated_benefit": "Maintains telecom operations through power outages and resists cyclone wind shear up to 150 km/h.",
+      "applicable_hazard": "all",
+      "protection_type": "hazard_defense_and_backup"
+    },
+    {
+      "id": "INT-HSP",
+      "name": "Wenlock Hospital Autonomous Microgrid & Water Tanks",
+      "description": "Installs dedicated hospital emergency diesel microgrid and on-site dual 20,000-liter hygienic potable water cisterns.",
+      "asset_id": "hospital",
+      "cost": 30000,
+      "estimated_benefit": "Protects Wenlock Hospital operations against loss of municipal electricity and municipal water supplies.",
+      "applicable_hazard": "utility_outage",
+      "protection_type": "dependency_backup"
+    },
+    {
+      "id": "INT-EMG",
+      "name": "MCC Command Centre Satellite Terminal & Generator",
+      "description": "Provides auxiliary generator backup and satellite communication link for continuous 112 / 108 emergency dispatch.",
+      "asset_id": "emergency",
+      "cost": 18000,
+      "estimated_benefit": "Keeps MCC emergency dispatch and responder coordination active through municipal power and tower outages.",
+      "applicable_hazard": "all",
+      "protection_type": "hazard_defense_and_backup"
+    }
+  ]
+}

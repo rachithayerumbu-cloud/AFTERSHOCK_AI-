@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AFTERSHOCK AI — Disaster Simulation</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app-layout">
+
+    <!-- CONSISTENT TOP NAVIGATION -->
+    <header class="top-nav">
+        <div class="nav-brand">
+            <a href="/simulation" class="brand-link">
+                <div class="brand-icon">⚡</div>
+                <div class="brand-text">
+                    <span class="brand-name">AFTERSHOCK <span>AI</span></span>
+                    <span class="brand-sub">Infrastructure Failure Simulator</span>
+                </div>
+            </a>
+        </div>
+
+        <nav class="nav-menu">
+            <a href="/simulation" class="nav-link active">Disaster Simulation</a>
+            <a href="/infrastructure" class="nav-link">Infrastructure Network</a>
+            <a href="/optimizer" class="nav-link">Budget Optimizer</a>
+            <a href="/risks" class="nav-link">AI Risk Analysis</a>
+        </nav>
+
+        <div class="nav-status">
+            <select id="citySelect" class="form-select city-select" aria-label="Select city"><option value="">Select city</option></select>
+        </div>
+    </header>
+
+    <!-- MAIN SIMULATION CONTENT -->
+    <main class="page-content city-unselected">
+        <div id="cityEmptyState" class="city-empty-state" role="status">Select a city to load its infrastructure and scenarios.</div>
+
+        <!-- CONTROL BAR -->
+        <section class="card controls-panel">
+            <div class="control-row">
+                <div class="control-item">
+                    <label for="simScenarioSelect">Select Disaster Scenario</label>
+                    <select id="simScenarioSelect" class="form-select">
+                        <option value="flood">Severe Flood & Road Washout</option>
+                        <option value="power_outage">Power Grid Transformer Collapse</option>
+                        <option value="communication_failure">Communication Tower Collapse</option>
+                    </select>
+                </div>
+
+                <div class="control-actions">
+                    <button id="btnRunSimulation" class="btn btn-primary btn-lg">
+                        <span class="btn-spinner" id="simSpinner" style="display: none;"></span>
+                        <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                        <span id="simBtnText">Run Simulation</span>
+                    </button>
+                    <button id="btnResetSim" class="btn btn-ghost">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+                        Reset
+                    </button>
+                </div>
+            </div>
+
+            <!-- SCENARIO BRIEF BANNER -->
+            <div class="scenario-brief-box" id="scenarioBriefBox">
+                <div class="brief-title-row">
+                    <span class="badge badge-hazard" id="briefHazardTag">HAZARD: FLOOD</span>
+                    <h3 id="briefScenarioTitle">Severe Flood & Road Washout</h3>
+                </div>
+                <div class="brief-meta-row">
+                    <span><strong>Initial Direct Shocks:</strong> <span id="briefInitialList">Electricity Substation, Main Access Road</span></span>
+                    <span><strong>Network Scope:</strong> <span id="simNetworkScope">Loading infrastructure...</span></span>
+                </div>
+            </div>
+
+            <!-- NOTIFICATION / STATUS BANNER -->
+            <div class="alert-banner" id="simAlertBanner" style="display: none;">
+                <!-- Updated dynamically on success or error -->
+            </div>
+        </section>
+
+        <!-- KPI METRICS ROW -->
+        <section class="kpi-row">
+            <div class="kpi-card highlight-danger">
+                <span class="kpi-title">Disruption Score</span>
+                <div class="kpi-number text-danger" id="kpiDisruptionScore">--</div>
+            </div>
+
+            <div class="kpi-card">
+                <span class="kpi-title">Failed Assets</span>
+                <div class="kpi-number text-danger" id="kpiFailedCount">--</div>
+            </div>
+
+            <div class="kpi-card">
+                <span class="kpi-title">Operational Assets</span>
+                <div class="kpi-number text-success" id="kpiOperCount">--</div>
+            </div>
+
+            <div class="kpi-card">
+                <span class="kpi-title">Protected Assets</span>
+                <div class="kpi-number text-accent" id="kpiProtCount">0</div>
+            </div>
+        </section>
+
+        <!-- TWO-COLUMN WORKSPACE: GRAPH + TIMELINE & ASSETS -->
+        <section class="main-grid">
+
+            <!-- LEFT COLUMN: LIVE INFRASTRUCTURE GRAPH -->
+            <div class="panel-column left-col">
+                <div class="card graph-card">
+                    <div class="card-header">
+                        <div>
+                            <h2>Cascading Failure Network Graph</h2>
+                        </div>
+                        <div class="legend">
+                            <span class="legend-item"><span class="dot dot-oper"></span> Operational</span>
+                            <span class="legend-item"><span class="dot dot-fail"></span> Failed</span>
+                            <span class="legend-item"><span class="dot dot-warning"></span> Warning</span>
+                            <span class="legend-item"><span class="dot dot-prot"></span> Protected outline</span>
+                        </div>
+                    </div>
+
+                    <div class="graph-toolbar" aria-label="Network graph controls">
+                        <span>Dependency network</span>
+                        <div>
+                            <button type="button" class="graph-control" data-graph-action="zoom-in" data-graph-target="simulationSvg" aria-label="Zoom in">+</button>
+                            <button type="button" class="graph-control" data-graph-action="zoom-out" data-graph-target="simulationSvg" aria-label="Zoom out">-</button>
+                            <button type="button" class="graph-control graph-reset" data-graph-action="reset" data-graph-target="simulationSvg">Reset view</button>
+                        </div>
+                    </div>
+
+                    <!-- PERSISTENT SVG CANVAS -->
+                    <div class="svg-container">
+                        <svg id="simulationSvg" viewBox="0 0 1200 640" preserveAspectRatio="xMidYMid meet" aria-label="Infrastructure dependency graph">
+                            <!-- Populated dynamically by script.js -->
+                        </svg>
+                    </div>
+
+                    <!-- NODE INSPECTOR BAR -->
+                    <div class="node-inspector">
+                        <div class="node-icon-box" id="simInspIcon">⚡</div>
+                        <div class="node-info-text">
+                            <div class="node-headline">
+                                <span class="node-name" id="simInspName">Electricity Substation</span>
+                                <span class="node-badge" id="simInspBadge">Operational</span>
+                            </div>
+                            <div class="node-details" id="simInspMeta">Energy &bull; Criticality: 10/10 &bull; Prerequisites: Primary Grid Source</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FACILITY STATUS TABLE -->
+                <div class="card" id="simAssetStatusPanel" hidden>
+                    <div class="card-header">
+                        <h2>Infrastructure Asset Status</h2>
+                    </div>
+                    <div class="table-scroll">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Facility</th>
+                                    <th>Category</th>
+                                    <th>Crit.</th>
+                                    <th>Status</th>
+                                    <th>Backup / Defense</th>
+                                </tr>
+                            </thead>
+                            <tbody id="simAssetTableBody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: CASCADE PROPAGATION TIMELINE -->
+            <div class="panel-column right-col">
+                <div class="card timeline-card">
+                    <div class="card-header">
+                        <h2>Cascade Propagation Timeline</h2>
+                        <span class="badge" id="simTimelineCount">--</span>
+                    </div>
+                    <div class="timeline-list" id="simTimelineList">
+                        <div class="empty-timeline"><p>No simulation run yet.</p></div>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- FOOTER WITH ACADEMIC DISCLAIMER -->
+    <footer class="app-footer">
+        <div class="footer-notice">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          
+        </div>
+        <div class="footer-meta">
+            <span>Website: <code class="footer-server-url"></code></span>
+        </div>
+    </footer>
+
+</div>
+
+<!-- STRICTLY LOCAL JAVASCRIPT -->
+<script src="script.js"></script>
+</body>
+</html>
+

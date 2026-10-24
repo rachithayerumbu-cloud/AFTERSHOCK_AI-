@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AFTERSHOCK AI — AI Risk Analysis</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app-layout">
+
+    <!-- CONSISTENT TOP NAVIGATION -->
+    <header class="top-nav">
+        <div class="nav-brand">
+            <a href="/simulation" class="brand-link">
+                <div class="brand-icon">⚡</div>
+                <div class="brand-text">
+                    <span class="brand-name">AFTERSHOCK <span>AI</span></span>
+                    <span class="brand-sub">Infrastructure Failure Simulator</span>
+                </div>
+            </a>
+        </div>
+
+        <nav class="nav-menu">
+            <a href="/simulation" class="nav-link">Disaster Simulation</a>
+            <a href="/infrastructure" class="nav-link">Infrastructure Network</a>
+            <a href="/optimizer" class="nav-link">Budget Optimizer</a>
+            <a href="/risks" class="nav-link active">AI Risk Analysis</a>
+        </nav>
+
+        <div class="nav-status">
+            <select id="citySelect" class="form-select city-select" aria-label="Select city"><option value="">Select city</option></select>
+        </div>
+    </header>
+
+    <!-- MAIN AI RISK CONTENT -->
+    <main class="page-content city-unselected">
+        <div id="cityEmptyState" class="city-empty-state" role="status">Select a city to load its asset classifications.</div>
+
+        <section class="card risk-overview-panel">
+            <div class="risk-overview-heading">
+                <div>
+                    <span class="section-tag"><span class="selected-city-name">Selected city</span> · Risk monitor</span>
+                    <h1>Asset Risk Overview</h1>
+                </div>
+                <span class="risk-model-mark"><span class="risk-live-dot"></span> Model output</span>
+            </div>
+            <div class="risk-tier-summary" id="riskTierSummary">
+                <div class="risk-tier-tile risk-tier-high"><span>High</span><strong id="riskHighCount">--</strong><small>assets</small></div>
+                <div class="risk-tier-tile risk-tier-medium"><span>Medium</span><strong id="riskMediumCount">--</strong><small>assets</small></div>
+                <div class="risk-tier-tile risk-tier-low"><span>Low</span><strong id="riskLowCount">--</strong><small>assets</small></div>
+            </div>
+            <div class="risk-caveat-row">
+                <span class="risk-caveat"></span>
+                <span class="risk-score-note"></span>
+            </div>
+        </section>
+
+        <!-- 8 ASSET RISK CLASSIFICATION CARDS GRID -->
+        <section class="card">
+            <div class="card-header">
+                <h2>Asset Classifications</h2>
+                <span class="badge" id="riskAssetCountBadge">Loading</span>
+            </div>
+
+            <div class="ml-grid" id="pageRisksGrid">
+                <!-- Populated dynamically by script.js from /api/risks -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER WITH ACADEMIC DISCLAIMER -->
+    <footer class="app-footer">
+        <div class="footer-notice">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+           
+        </div>
+        <div class="footer-meta">
+            <span>Website: <code class="footer-server-url"></code></span>
+        </div>
+    </footer>
+
+</div>
+
+<!-- STRICTLY LOCAL JAVASCRIPT -->
+<script src="script.js"></script>
+</body>
+</html>
+

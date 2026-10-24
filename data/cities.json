@@ -1,0 +1,39 @@
+{
+  "active_city": "mangaluru",
+  "cities": [
+    {
+      "id": "mangaluru",
+      "name": "Mangaluru (Mangalore)",
+      "state": "Karnataka",
+      "country": "India",
+      "region": "Coastal Karnataka / Dakshina Kannada",
+      "status": "active",
+      "data_file": "infrastructure.json",
+      "description": "Coastal port city vulnerable to Southwest monsoon cloudbursts, river flooding along Netravati and Gurupura basins, and Arabian Sea cyclonic storms.",
+      "key_lifelines": [
+        "Kavoor 220/110 kV Substation (KPTCL)",
+        "Thumbay Vented Dam & Pumping Station",
+        "Government Wenlock District Hospital",
+        "Kadri Hills Cellular & Microwave Relay Mast",
+        "NH-66 Kulur Bridge Arterial Corridor"
+      ]
+    },
+    {
+      "id": "bengaluru",
+      "name": "Bengaluru (Bangalore)",
+      "state": "Karnataka",
+      "country": "India",
+      "region": "South Karnataka Inland Plateau",
+      "status": "extensible_template",
+      "data_file": "cities/bengaluru.json",
+      "description": "Inland metropolis susceptible to urban flooding, lake overflow, and high-voltage grid disruptions (template profile for future multi-city extension).",
+      "key_lifelines": [
+        "Hoodi 400/220 kV Substation",
+        "T.K. Halli Cauvery Water Pumping Station",
+        "Victoria Hospital / Bowring Hospital",
+        "MG Road Telecom Gateway",
+        "Outer Ring Road (ORR) Arterial Transit"
+      ]
+    }
+  ]
+}

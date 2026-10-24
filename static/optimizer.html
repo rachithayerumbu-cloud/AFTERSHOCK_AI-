@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AFTERSHOCK AI — Budget-Aware Optimizer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app-layout">
+
+    <!-- CONSISTENT TOP NAVIGATION -->
+    <header class="top-nav">
+        <div class="nav-brand">
+            <a href="/simulation" class="brand-link">
+                <div class="brand-icon">⚡</div>
+                <div class="brand-text">
+                    <span class="brand-name">AFTERSHOCK <span>AI</span></span>
+                    <span class="brand-sub">Infrastructure Failure Simulator</span>
+                </div>
+            </a>
+        </div>
+
+        <nav class="nav-menu">
+            <a href="/simulation" class="nav-link">Disaster Simulation</a>
+            <a href="/infrastructure" class="nav-link">Infrastructure asset</a>
+            <a href="/optimizer" class="nav-link active">Budget Optimizer</a>
+            <a href="/risks" class="nav-link">AI Risk Analysis</a>
+        </nav>
+
+        <div class="nav-status">
+            <select id="citySelect" class="form-select city-select" aria-label="Select city"><option value="">Select city</option></select>
+        </div>
+    </header>
+
+    <!-- MAIN OPTIMIZER CONTENT -->
+    <main class="page-content city-unselected">
+        <div id="cityEmptyState" class="city-empty-state" role="status">Select a city to load its scenarios and interventions.</div>
+
+        <!-- CONTROLS CARD -->
+        <section class="card controls-panel">
+            <div class="control-row">
+                <div class="control-item">
+                    <label for="optScenarioSelect">Hazard Scenario</label>
+                    <select id="optScenarioSelect" class="form-select">
+                        <option value="flood">Severe Flood & Road Washout</option>
+                        <option value="power_outage">Power Grid Transformer Collapse</option>
+                        <option value="communication_failure">Communication Tower Collapse</option>
+                    </select>
+                </div>
+
+                <div class="control-item budget-item">
+                    <label for="optBudgetInput">Available Budget (₹ INR)</label>
+                    <div class="budget-input-box">
+                        <span class="currency-symbol">₹</span>
+                        <input type="number" id="optBudgetInput" class="form-input" placeholder="Enter amount" min="0" step="5000">
+                    </div>
+                    <div class="quick-chips">
+                        <button type="button" class="chip" data-val="15000">₹15k</button>
+                        <button type="button" class="chip" data-val="35000">₹35k</button>
+                        <button type="button" class="chip" data-val="50000">₹50k</button>
+                        <button type="button" class="chip" data-val="75000">₹75k</button>
+                    </div>
+                </div>
+
+                <div class="control-actions">
+                    <button id="btnRunOptimizer" class="btn btn-primary btn-lg">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                        <span id="optBtnText">Find Budget Plan</span>
+                    </button>
+                    <button id="btnApplyOptimizerPlan" class="btn btn-success btn-lg" disabled>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        <span id="applyBtnText">Apply Plan</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- STATUS BANNER -->
+            <div class="alert-banner" id="optAlertBanner" style="display: none;"></div>
+        </section>
+
+        <!-- KPI RESILIENCE METRICS -->
+        <section class="kpi-row">
+            <div class="kpi-card">
+                <span class="kpi-title">Baseline Disruption</span>
+                <div class="kpi-number text-danger" id="optValBaseline">--</div>
+                <span class="kpi-hint">Before protective plan</span>
+            </div>
+
+            <div class="kpi-card highlight-border">
+                <span class="kpi-title">Optimized Disruption</span>
+                <div class="kpi-number text-accent" id="optValOptimized">--</div>
+                <span class="kpi-hint" id="optLblSimState">Awaiting optimization</span>
+            </div>
+
+            <div class="kpi-card">
+                <span class="kpi-title">Disruption Reduction</span>
+                <div class="kpi-number text-success" id="optValReduction">--</div>
+                <span class="kpi-hint" id="optValReductionPct">0% reduction</span>
+            </div>
+
+            <div class="kpi-card">
+                <span class="kpi-title">Allocated Expenditure</span>
+                <div class="kpi-number text-warning" id="optValSpent">₹0</div>
+                <span class="kpi-hint" id="optValLeft">Remaining: --</span>
+            </div>
+        </section>
+
+        <!-- TWO-COLUMN WORKSPACE: PLAN DETAILS + COMPARISON GRAPH -->
+        <section class="main-grid">
+
+            <!-- LEFT: RECOMMENDED PLAN CARD -->
+            <div class="panel-column left-col">
+                <div class="card plan-card">
+                    <div class="card-header">
+                        <div>
+                            <h2>Recommended Resilience Interventions</h2>
+                        </div>
+                        <span class="badge" id="optCombBadge">--</span>
+                    </div>
+
+                    <div class="plan-body" id="optPlanBody"></div>
+                </div>
+
+                <!-- FACILITY RESILIENCE IMPACT TABLE -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Protected Infrastructure Facilities</h2>
+                    </div>
+                    <div class="table-scroll">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Facility</th>
+                                    <th>Category</th>
+                                    <th>Crit.</th>
+                                    <th>Status Post-Plan</th>
+                                    <th>Mitigation Mechanism</th>
+                                </tr>
+                            </thead>
+                            <tbody id="optAssetTableBody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: BEFORE-VERSUS-AFTER COMPARISON GRAPH (NEVER DISAPPEARS) -->
+            <div class="panel-column right-col">
+                <div class="card chart-card">
+                    <div class="card-header">
+                        <h2>Disruption Comparison (Before vs After)</h2>
+                        <span class="badge" id="optChartBadge">Comparison</span>
+                    </div>
+
+                    <!-- PERSISTENT BEFORE-AFTER BAR CHART (NEVER COLLAPSES OR DISAPPEARS) -->
+                    <div class="comparison-graph-box">
+                        <div class="bars-flex">
+                            <!-- Baseline Bar -->
+                            <div class="bar-unit">
+                                <span class="bar-val text-danger" id="optBarValBefore">--</span>
+                                <div class="bar-track">
+                                    <div class="bar-fill bar-before" id="optBarBefore" style="height: 0%;"></div>
+                                </div>
+                                <span class="bar-name">Before Protection</span>
+                            </div>
+
+                            <!-- Protected Bar -->
+                            <div class="bar-unit">
+                                <span class="bar-val text-success" id="optBarValAfter">--</span>
+                                <div class="bar-track">
+                                    <div class="bar-fill bar-after" id="optBarAfter" style="height: 0%;"></div>
+                                </div>
+                                <span class="bar-name">With Plan</span>
+                            </div>
+                        </div>
+
+                        <div class="chart-summary-text" id="optChartSummary">
+                            Select a scenario and budget, then click <strong>"Find Budget Plan"</strong> to evaluate resilience gains.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card graph-card optimizer-network-card">
+                    <div class="card-header">
+                        <div>
+                            <h2>Network State</h2>
+                            <span class="subtext">Updated from optimizer results and the real Apply Plan simulation response.</span>
+                        </div>
+                        <div class="legend">
+                            <span class="legend-item"><span class="dot dot-oper"></span> Operational</span>
+                            <span class="legend-item"><span class="dot dot-fail"></span> Failed</span>
+                            <span class="legend-item"><span class="dot dot-prot"></span> Protected outline</span>
+                        </div>
+                    </div>
+                    <div class="svg-container optimizer-svg-container">
+                        <svg id="optimizerNetworkSvg" viewBox="0 0 1200 640" preserveAspectRatio="xMidYMid meet" aria-label="Optimized infrastructure network state"></svg>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- FOOTER WITH ACADEMIC DISCLAIMER -->
+    <footer class="app-footer">
+        <div class="footer-notice">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            <span>Educational prototype. Not validated for emergency decisions.</span>
+        </div>
+        <div class="footer-meta">
+            <span>Website: <code class="footer-server-url"></code></span>
+        </div>
+    </footer>
+
+</div>
+
+<!-- STRICTLY LOCAL JAVASCRIPT -->
+<script src="script.js"></script>
+</body>
+</html>
+
