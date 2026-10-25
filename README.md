@@ -535,6 +535,6 @@ Invoke-RestMethod -Uri "$baseUrl/api/optimize" -Method POST -Body $optBody -Cont
 - **Debug Mode Disabled:** Flask runs with `debug=False` by default to avoid arbitrary code execution vulnerabilities.
 - **Safe DOM Manipulation:** Frontend uses `textContent` and an `escapeHtml()` sanitizer to prevent Cross-Site Scripting (XSS).
 
----
+
 
 
